@@ -1,0 +1,166 @@
+<?php
+
+
+namespace CocktailSearch;
+
+
+use stdClass;
+use UnexpectedValueException;
+
+class Item {
+    public string $name;
+    public string $description = '';
+    /** @var string[] */
+    public array $isSubclassOf = [];
+    /** @var string[] */
+    public array $isInstanceOf = [];
+    /** @var IngRel[] */
+    public array $hasIngredients = [];
+    /** @var string[] */
+    public array $substituteFor = [];
+    /** @var Source[] */
+    public array $source = [];
+
+    public static function fromJson( stdClass $jsonItem, array $jsonItems ): Item {
+        // TODO would be nicer to not have to pass $jsonItems here
+        $item = new Item();
+        $item->name = $jsonItem->labels->en->value;
+        if ( isset ( $jsonItem->descriptions->en ) ) {
+            $item->description = $jsonItem->descriptions->en->value;
+        }
+        if ( isset ( $jsonItem->claims->P2 ) ) {
+            foreach ( $jsonItem->claims->P2 as $p2) {
+                $item->isSubclassOf[] = $jsonItems[$p2->mainsnak->datavalue->value->id]->labels->en->value;
+            }
+        }
+        if ( isset ( $jsonItem->claims->P1) ) {
+            foreach ( $jsonItem->claims->P1 as $p1) {
+                $item->isInstanceOf[] = $jsonItems[$p1->mainsnak->datavalue->value->id]->labels->en->value;
+            }
+        }
+
+        if ( isset ( $jsonItem->claims->P4) ) {
+            foreach ( $jsonItem->claims->P4 as $p4 ) {
+                $item->substituteFor[] = $jsonItems[$p4->mainsnak->datavalue->value->id]->labels->en->value;
+            }
+        }
+
+        if ( isset ( $jsonItem->claims->P3) ) {
+            foreach ( $jsonItem->claims->P3 as $p3 ) {
+                $ingRel = new IngRel();
+                $ingRel->ingredient = $jsonItems[$p3->mainsnak->datavalue->value->id]->labels->en->value;
+                $item->hasIngredients[] = $ingRel;
+                if ( isset( $p3->qualifiers->P8 ) ) {
+                    foreach ( $p3->qualifiers->P8 as $p8 ) {
+                        $ingRel->suchAs[] = $jsonItems[$p8->datavalue->value->id]->labels->en->value;
+                    }
+                }
+                if ( isset( $p3->qualifiers->P4 ) ) {
+                    foreach ( $p3->qualifiers->P4 as $p4 ) {
+                        $ingRel->substituteFor[] = $jsonItems[$p4->datavalue->value->id]->labels->en->value;
+                    }
+                }
+                if ( isset ( $p3->qualifiers->P11 ) ) {
+                    $ingRel->optional = true;
+                }
+            }
+        }
+
+        if ( isset ( $jsonItem->claims->P5 ) ) {
+            foreach ( $jsonItem->claims->P5 as $p5 ) {
+                if ( isset($p5->qualifiers->P7 ) ) {
+                    foreach ($p5->qualifiers->P7 as $p7) {
+                        $source = new Source();
+                        $source->book = $jsonItems[$p5->mainsnak->datavalue->value->id]->labels->en->value;
+                        $source->page = $p7->datavalue->value;
+                        $item->source[] = $source;
+                    }
+                }
+            }
+        }
+
+        if ( isset ( $jsonItem->claims->P6 ) ) {
+            foreach ( $jsonItem->claims->P6 as $p6 ) {
+                $source = new Source();
+                $source->url = $p6->mainsnak->datavalue->value;
+                $item->source[] = $source;
+            }
+        }
+
+        return $item;
+    }
+
+    public static function fromFlatFileFormat( array $txtFile, int &$i, array $existingItems ): Item {
+        $item = null;
+
+        while ( $item === null || $i < count( $txtFile) ) {
+            $line = $txtFile[$i];
+            $toks = array_map('trim', explode(':', $line, 2));
+            if ($item === null) {
+                if ( $toks[0] !== 'Item' ) {
+                    throw new UnexpectedValueException("$i: Was expecting Item, got $line");
+                }
+                DataStore::assertExistence($toks[1], $existingItems, $i);
+
+                $item = new Item();
+                $item->name = $toks[1];
+                $i++;
+            } else {
+                switch ( $toks[0] ) {
+                    case 'Item':
+                        return $item;
+                    case 'Desc':
+                        $item->description = $toks[1];
+                        $i++;
+                        break;
+                    case 'Class':
+                        $item->isSubclassOf[] = $toks[1];
+                        $i++;
+                        break;
+                    case 'Type':
+                        $item->isInstanceOf[] = $toks[1];
+                        $i++;
+                        break;
+                    case 'Sub':
+                        $item->substituteFor[] = $toks[1];
+                        $i++;
+                        break;
+                    case 'Ref':
+                    case 'Url':
+                        $item->source[] = Source::fromFlatFileFormat( $txtFile, $i, $existingItems );
+                        break;
+                    case 'Ing':
+                        $item->hasIngredients[] = IngRel::fromFlatFileFormat( $txtFile, $i, $existingItems );
+                        break;
+                    case '':
+                        $i++;
+                        break;
+                    default:
+                        throw new UnexpectedValueException( "$i: Unknown token {$toks[0]}");
+                }
+            }
+        }
+
+        return $item;
+    }
+
+    public function toFlatFileFormat( string $filename ) {
+        file_put_contents( $filename, 'Item:' . $this->name . PHP_EOL, FILE_APPEND );
+        foreach ( $this->isInstanceOf as $inst ) {
+            file_put_contents( $filename, 'Type:' . $inst . PHP_EOL, FILE_APPEND );
+        }
+        foreach ( $this->isSubclassOf as $subc ) {
+            file_put_contents( $filename, 'Class:' . $subc . PHP_EOL, FILE_APPEND );
+        }
+        foreach ( $this->substituteFor as $sub ) {
+            file_put_contents( $filename, 'Sub:' . $sub . PHP_EOL, FILE_APPEND );
+        }
+        file_put_contents( $filename, 'Desc:' . $this->description . PHP_EOL, FILE_APPEND );
+        foreach( $this->hasIngredients as $ing ) {
+            $ing->toFlatFile( $filename );
+        }
+        foreach ( $this->source as $source ) {
+            $source->toFlatFile( $filename );
+        }
+    }
+}

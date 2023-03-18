@@ -1,0 +1,14 @@
+{
+  "name": "ihurbainpalatin/limecocktail",
+  "description": "LimeCocktail, a small tool to search through a cocktail book index",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Isabelle Hurbain-Palatin",
+      "email": "isabelle@palatin.fr"
+    }
+  ],
+  "autoload": {
+    "psr-4": { "": "src/" }
+  }
+}
