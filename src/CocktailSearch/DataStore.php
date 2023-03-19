@@ -33,21 +33,17 @@ class DataStore {
     public static function fromFlatFile( string $filename ): DataStore {
         $txtFile = file( $filename, FILE_IGNORE_NEW_LINES );
         $existingItems = [];
-        $haveAllItems = false;
-        $i = 0;
         $store = new DataStore();
+
+        foreach ( $txtFile as $line ) {
+            if ( str_starts_with( $line, 'Item:') ) {
+                $existingItems[] = substr( $line, 5 );
+            }
+        }
+
+        $i = 0;
         while ($i < count( $txtFile ) ) {
-            $line = trim( $txtFile[$i] );
-            if ( $line === '======' ) {
-                $haveAllItems = true;
-                $i++;
-                continue;
-            }
-            if ( !$haveAllItems ) {
-                $existingItems[] = $line;
-                $i++;
-                continue;
-            }
+            $line = $txtFile[$i];
             if ( $line === '' ) {
                 $i++;
                 continue;
@@ -62,10 +58,6 @@ class DataStore {
 
     public function toFlatFile( string $filename ) {
         file_put_contents($filename, '' );
-        foreach ( $this->items as $item ) {
-            file_put_contents( $filename, $item->name . PHP_EOL, FILE_APPEND );
-        }
-        file_put_contents( $filename, '======' . PHP_EOL, FILE_APPEND );
         foreach ( $this->items as $item ) {
             $item->toFlatFileFormat( $filename );
             file_put_contents($filename, PHP_EOL, FILE_APPEND );

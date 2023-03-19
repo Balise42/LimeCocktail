@@ -12,11 +12,9 @@ LimeCocktail must be provided with an index in a custom format, as explained bel
 
 The index file is currently hard-coded to `data/cocktails.txt`. A tiny example is provided with this source code.
 
-The file has two parts, separated by `======`. The first part is the list of all the entities ("Items") in the file. This is used to enforce declaration and to hopefully avoid inconsistent typos such as typing once "Martinni" for "Martini". Every item in the file must appear in that list.
+Every line is prefixed with a keyword, indicated below. Empty lines are ignored.
 
-The second part of the file is the meat of the data. Every line is prefixed with a keyword, indicated below. Empty lines are ignored.
-
-* `Item:` - name of the item. Mandatory, must be in the item list, unique.
+* `Item:` - name of the item. Mandatory, unique.
 * `Desc:` - description of the item. Mandatory, free string, unique.
 * `Alias` - another name for the item. Optional, free string, multiple.
 * `Class:` - used for classes of items; indicates the class this item is a subclass of. For instance, `fruit liqueur` could be a subclass of `liqueur`, which would be coded as the `fruit liqueur` item having `Class:liqueur`. Optional, must be in the item list, multiple.

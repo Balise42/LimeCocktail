@@ -1,46 +1,3 @@
-cocktail recipe
-recipe
-ingredient
-garnish
-book
-glassware
-spirit
-rum
-white rum
-citrus juice
-lemon juice
-lime juice
-Spanish-style rum
-Flor de Caña 4-year white rum
-grapefruit juice
-liqueur
-maraschino liqueur
-Luxardo maraschino liqueur
-coupe
-lime wheel
-Drinking French
-Cocktail Codex
-Hemingway Daiquiri
-Daiquiri
-Basic Sour
-simple syrup
-syrup
-sugar
-crystals and powders
-demerara sugar
-rich demerara syrup
-fruit juice
-Plantation Pineapple
-infused rum
-Caña Brava white rum
-French-style rum
-La Favorite Cœur de Canne
-Appleton Estate Reserve Blend rum
-lime wedge
-Jamaican rum
-dark rum
-non-alcoholic drink
-======
 Item:cocktail recipe
 Desc:recipe for a cocktail
 Class:recipe
@@ -250,3 +207,11 @@ Item:non-alcoholic drink
 Desc:drink without alcohol
 Alias:soft drink
 Class:ingredient
+
+Item:lime wedge
+Desc:garnish
+Type:garnish
+
+Item:dark rum
+Desc:dark rum (typically aged)
+Class:rum
