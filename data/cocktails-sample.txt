@@ -1,0 +1,252 @@
+cocktail recipe
+recipe
+ingredient
+garnish
+book
+glassware
+spirit
+rum
+white rum
+citrus juice
+lemon juice
+lime juice
+Spanish-style rum
+Flor de Caña 4-year white rum
+grapefruit juice
+liqueur
+maraschino liqueur
+Luxardo maraschino liqueur
+coupe
+lime wheel
+Drinking French
+Cocktail Codex
+Hemingway Daiquiri
+Daiquiri
+Basic Sour
+simple syrup
+syrup
+sugar
+crystals and powders
+demerara sugar
+rich demerara syrup
+fruit juice
+Plantation Pineapple
+infused rum
+Caña Brava white rum
+French-style rum
+La Favorite Cœur de Canne
+Appleton Estate Reserve Blend rum
+lime wedge
+Jamaican rum
+dark rum
+non-alcoholic drink
+======
+Item:cocktail recipe
+Desc:recipe for a cocktail
+Class:recipe
+
+Item:recipe
+Desc:class for recipes
+
+Item:ingredient
+Desc:class for ingredients
+
+Item:garnish
+Desc:stuff to garnish a cocktail
+Class:ingredient
+
+Item:book
+Desc:book in which a recipe is contained
+
+Item:glassware
+Desc:class of glasses
+
+Item:spirit
+Desc:alcoholic high proof beverage
+Class:ingredient
+
+Item:rum
+Desc:cane sugar spirit
+Class:spirit
+
+Item:white rum
+Desc:rum, but white
+Class:rum
+
+Item:citrus juice
+Desc:citrus fruit juice
+Class:fruit juice
+
+Item:lemon juice
+Desc:yellow lemon juice
+Type:citrus juice
+Sub:lime juice
+
+Item:lime juice
+Desc:lime fruit
+Type:citrus juice
+Sub:lemon juice
+
+Item:Spanish-style rum
+Desc:Spanish-style rum
+Class:rum
+
+Item:Flor de Caña 4-year white rum
+Desc:white rum
+Type:white rum
+Type:Spanish-style rum
+
+Item:grapefruit juice
+Desc:squeezed grapefruit
+Type:citrus juice
+
+Item:liqueur
+Desc:sweet low-ish alcoholic drink
+Class:ingredient
+
+Item:maraschino liqueur
+Desc:cherry liqueur
+Type:liqueur
+
+Item:Luxardo maraschino liqueur
+Desc:maraschino liqueur
+Type:maraschino liqueur
+
+Item:coupe
+Desc:coupe glass
+Type:glassware
+
+Item:lime wheel
+Desc:garnish
+Type:garnish
+
+Item:Drinking French
+Desc:book by David Lebovitz
+Alias:drinking french
+Type:book
+
+Item:Cocktail Codex
+Desc:cocktail book
+Alias:cocktail codex
+Type:book
+
+Item:Hemingway Daiquiri
+Desc:grapefruit daiquiri
+Type:cocktail recipe
+Var:Daiquiri
+Ing:white rum
+Such:Flor de Caña 4-year white rum
+Ing:lime juice
+Ing:grapefruit juice
+Ing:maraschino liqueur
+Such:Luxardo maraschino liqueur
+Glass:coupe
+Garn:lime wheel
+Ref:Drinking French#224
+Ref:Cocktail Codex#120
+Url:https://www.davidlebovitz.com/the-hemingway-daiquiri-cocktail-recipe-rum-lime-grapefruit-juice/
+
+Item:Daiquiri
+Desc:cocktail with rum and lime
+Type:cocktail recipe
+Var:Basic Sour
+Ing:simple syrup
+Ing:rum
+Such:Plantation Pineapple
+Such:Caña Brava white rum
+Such:La Favorite Cœur de Canne
+Such:Appleton Estate Reserve Blend rum
+Ing:lime juice
+Glass:coupe
+Garn:lime wedge
+Ref:Cocktail Codex#103
+Ref:Cocktail Codex#113
+Ref:Cocktail Codex#119
+Ref:Cocktail Codex#145
+Url:https://www.davidlebovitz.com/stiggins-pineapple-lime-cocktail-recipe-plantation-rum-rhum-daiquiri/
+
+Item:Basic Sour
+Desc:sour template
+Alias:sour
+Type:cocktail recipe
+Ing:spirit
+Ing:lemon juice
+Sub:lime juice
+Ing:simple syrup
+Glass:coupe
+Ref:Cocktail Codex#106
+
+Item:simple syrup
+Desc:syrup made from 1:1 parts of sugar and water
+Type:syrup
+Type:recipe
+Sub:rich demerara syrup
+Ing:sugar
+Ref:Drinking French#270
+Ref:Cocktail Codex#45
+
+Item:syrup
+Desc:class for flavored syrups
+Class:ingredient
+
+Item:rich demerara syrup
+Desc:sugar syrup
+Alias:demerara syrup
+Type:syrup
+Type:recipe
+Sub:simple syrup
+Ing:demerara sugar
+Ref:Drinking French#271
+
+Item:demerara sugar
+Desc:brown sugar
+Type:sugar
+
+Item:sugar
+Desc:sugar in all its forms
+Class:crystals and powders
+
+Item:crystals and powders
+Desc:granulated stuff
+Class:ingredient
+
+Item:infused rum
+Desc:rum with stuff in it
+Class:rum
+
+Item:Plantation Pineapple
+Desc:dark rum infused with pinapple
+Alias:Stiggins Fancy Pineapple
+Type:infused rum
+
+Item:Caña Brava white rum
+Desc:white rum
+Type:Spanish-style rum
+Type:white rum
+
+Item:La Favorite Cœur de Canne
+Desc:agricole white rum
+Type:white rum
+Type:French-style rum
+
+Item:French-style rum
+Desc:French-style rum
+Class:rum
+
+Item:Appleton Estate Reserve Blend rum
+Desc:dark rum
+Type:Jamaican rum
+Type:dark rum
+
+Item:Jamaican rum
+Desc:Jamaican rum
+Class:rum
+
+Item:fruit juice
+Desc:category for all the fruit juice
+Class:non-alcoholic drink
+
+Item:non-alcoholic drink
+Desc:drink without alcohol
+Alias:soft drink
+Class:ingredient
