@@ -2,6 +2,7 @@
 
 namespace CocktailSearch;
 
+use RuntimeException;
 use UnexpectedValueException;
 
 class DataStore {
@@ -110,10 +111,20 @@ class DataStore {
         return $ings;
     }
 
+    /**
+     * @param array $ingredients
+     * @return Item[]
+     */
     public function getCocktails( array $ingredients ): array {
+        if ( count( $ingredients ) === 0 ) {
+            return [];
+        }
         $recipes = [];
         $extendedIngredients = array_map( fn($i): array => $this->getSubstitutes( $i ), $ingredients );
         foreach ($this->items as $recipe) {
+            if ( !in_array('cocktail recipe', $recipe->isInstanceOf ) ) {
+                continue;
+            }
             $include = true;
             foreach ( $extendedIngredients as $extendedIngredient ) {
                 if (!$this->hasExtendedIngredient( $recipe, $extendedIngredient ) ) {
@@ -122,7 +133,7 @@ class DataStore {
                 }
             }
             if ( $include ) {
-                $recipes[] = [ $recipe->name, $recipe->description, $recipe->source ] ;
+                $recipes[] = $recipe;
             }
         }
         return $recipes;
@@ -141,5 +152,42 @@ class DataStore {
         if ( !in_array( $elem, $existingItems ) ) {
             throw new UnexpectedValueException( "$i: Item $elem is not part of the known elements" );
         }
+    }
+
+    public function hasItem(string $ing): bool {
+        return ( array_key_exists( $ing, $this->items ) );
+    }
+
+    public function getIngredients(): array {
+        $res = [];
+        foreach ( $this->items as $item ) {
+            if ( $this->isIngredient( $item, 0 ) ) {
+                $res[$item->name] = $item->name;
+                foreach ( $item->alias as $alias) {
+                    $res[$alias] = $item->name;
+                }
+            }
+        }
+        return $res;
+    }
+
+    public function isIngredient( Item $item, int $it ): bool {
+        if ( $it > 50 ) {
+            throw new RuntimeException( "ETOOMANYLOOPS" );
+        }
+        if ( in_array( 'ingredient', $item->isInstanceOf ) || in_array( 'ingredient', $item->isSubclassOf)) {
+            return true;
+        }
+        foreach ( $item->isInstanceOf as $inst ) {
+            if ( $this->isIngredient( $this->items[$inst], $it + 1 ) ) {
+                return true;
+            }
+        }
+        foreach ( $item->isSubclassOf as $class ) {
+            if ( $this->isIngredient( $this->items[$class], $it + 1 ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }
