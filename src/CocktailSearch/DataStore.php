@@ -37,6 +37,10 @@ class DataStore {
 
         foreach ( $txtFile as $line ) {
             if ( str_starts_with( $line, 'Item:') ) {
+                $item = substr( $line, 5 );
+                if ( in_array( $item, $existingItems ) ) {
+                    throw new RuntimeException( "Item $item declared twice" );
+                }
                 $existingItems[] = substr( $line, 5 );
             }
         }
