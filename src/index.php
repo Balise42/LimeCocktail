@@ -19,11 +19,11 @@ $ds = DataStore::fromFlatFile( '../data/cocktails.txt' );
 
 if( !isset( $_GET['ing'] ) ):?>
     <form method="get">
-        <input name="ing[]" list="inglist" />
-        <input name="ing[]" list="inglist" />
-        <input name="ing[]" list="inglist" />
-        <input name="ing[]" list="inglist" />
-        <input name="ing[]" list="inglist" />
+        <p><input name="ing[]" list="inglist" /></p>
+        <p><input name="ing[]" list="inglist" /></p>
+        <p><input name="ing[]" list="inglist" /></p>
+        <p><input name="ing[]" list="inglist" /></p>
+        <p><input name="ing[]" list="inglist" /></p>
         <datalist id="inglist">
             <?php foreach ( $ds->getIngredients() as $alias => $ing ):
             echo "<option value=\"$ing\">$alias</option>";
