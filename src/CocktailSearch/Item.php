@@ -20,6 +20,12 @@ class Item {
     public array $substituteFor = [];
     /** @var Source[] */
     public array $source = [];
+    /** @var string[] */
+    public array $variationOf = [];
+    /** @var Glassware[] */
+    public array $glass = [];
+    /** @var string[] */
+    public array $garnish = [];
 
     public static function fromJson( stdClass $jsonItem, array $jsonItems ): Item {
         // TODO would be nicer to not have to pass $jsonItems here
@@ -87,6 +93,29 @@ class Item {
             }
         }
 
+        if ( isset ( $jsonItem->claims->P9 ) ) {
+            foreach ( $jsonItem->claims->P9 as $p9 ) {
+                $item->variationOf[] = $jsonItems[$p9->mainsnak->datavalue->value->id]->labels->en->value;
+            }
+        }
+
+        if ( isset ( $jsonItem->claims->P10 ) ) {
+            foreach ( $jsonItem->claims->P10 as $p10 ) {
+                $glass = new Glassware();
+                $item->glass[] = $glass;
+                $glass->glass = $jsonItems[$p10->mainsnak->datavalue->value->id]->labels->en->value;
+                if ( isset( $p10->qualifiers->P13 ) ) {
+                    $glass->qualifier = $p10->qualifiers->P13[0]->datavalue->value;
+                }
+            }
+        }
+
+        if ( isset ($jsonItem->claims->P12 ) ) {
+            foreach ( $jsonItem->claims->P12 as $p12 ) {
+                $item->garnish[] = $jsonItems[$p12->mainsnak->datavalue->value->id]->labels->en->value;
+            }
+        }
+
         return $item;
     }
 
@@ -114,15 +143,23 @@ class Item {
                         $i++;
                         break;
                     case 'Class':
+                        DataStore::assertExistence($toks[1], $existingItems, $i);
                         $item->isSubclassOf[] = $toks[1];
                         $i++;
                         break;
                     case 'Type':
+                        DataStore::assertExistence($toks[1], $existingItems, $i);
                         $item->isInstanceOf[] = $toks[1];
                         $i++;
                         break;
                     case 'Sub':
+                        DataStore::assertExistence($toks[1], $existingItems, $i);
                         $item->substituteFor[] = $toks[1];
+                        $i++;
+                        break;
+                    case 'Var':
+                        DataStore::assertExistence($toks[1], $existingItems, $i);
+                        $item->variationOf[] = $toks[1];
                         $i++;
                         break;
                     case 'Ref':
@@ -131,6 +168,14 @@ class Item {
                         break;
                     case 'Ing':
                         $item->hasIngredients[] = IngRel::fromFlatFileFormat( $txtFile, $i, $existingItems );
+                        break;
+                    case 'Glass':
+                        $item->glass[] = Glassware::fromFlatFileFormat( $txtFile, $i, $existingItems );
+                        break;
+                    case 'Garn':
+                        DataStore::assertExistence( $toks[1], $existingItems, $i );
+                        $item->garnish[] = $toks[1];
+                        $i++;
                         break;
                     case '':
                         $i++;
@@ -146,18 +191,27 @@ class Item {
 
     public function toFlatFileFormat( string $filename ) {
         file_put_contents( $filename, 'Item:' . $this->name . PHP_EOL, FILE_APPEND );
+        file_put_contents( $filename, 'Desc:' . $this->description . PHP_EOL, FILE_APPEND );
         foreach ( $this->isInstanceOf as $inst ) {
             file_put_contents( $filename, 'Type:' . $inst . PHP_EOL, FILE_APPEND );
         }
         foreach ( $this->isSubclassOf as $subc ) {
             file_put_contents( $filename, 'Class:' . $subc . PHP_EOL, FILE_APPEND );
         }
+        foreach ( $this->variationOf as $var ) {
+            file_put_contents( $filename, 'Var:' . $var . PHP_EOL, FILE_APPEND );
+        }
         foreach ( $this->substituteFor as $sub ) {
             file_put_contents( $filename, 'Sub:' . $sub . PHP_EOL, FILE_APPEND );
         }
-        file_put_contents( $filename, 'Desc:' . $this->description . PHP_EOL, FILE_APPEND );
         foreach( $this->hasIngredients as $ing ) {
             $ing->toFlatFile( $filename );
+        }
+        foreach ( $this->glass as $glass ) {
+            $glass->toFlatFile( $filename );
+        }
+        foreach ( $this->garnish as $garnish ) {
+            file_put_contents( $filename, 'Garn:' . $garnish . PHP_EOL, FILE_APPEND );
         }
         foreach ( $this->source as $source ) {
             $source->toFlatFile( $filename );
