@@ -11,6 +11,8 @@ class Item {
     public string $name;
     public string $description = '';
     /** @var string[] */
+    public array $alias = [];
+    /** @var string[] */
     public array $isSubclassOf = [];
     /** @var string[] */
     public array $isInstanceOf = [];
@@ -30,9 +32,16 @@ class Item {
     public static function fromJson( stdClass $jsonItem, array $jsonItems ): Item {
         // TODO would be nicer to not have to pass $jsonItems here
         $item = new Item();
+
+
         $item->name = $jsonItem->labels->en->value;
         if ( isset ( $jsonItem->descriptions->en ) ) {
             $item->description = $jsonItem->descriptions->en->value;
+        }
+        if ( isset ( $jsonItem->aliases->en ) ) {
+            foreach ( $jsonItem->aliases->en as $alias ) {
+                $item->alias[] = $alias->value;
+            }
         }
         if ( isset ( $jsonItem->claims->P2 ) ) {
             foreach ( $jsonItem->claims->P2 as $p2) {
@@ -152,6 +161,10 @@ class Item {
                         $item->isInstanceOf[] = $toks[1];
                         $i++;
                         break;
+                    case 'Alias':
+                        $item->alias[] = $toks[1];
+                        $i++;
+                        break;
                     case 'Sub':
                         DataStore::assertExistence($toks[1], $existingItems, $i);
                         $item->substituteFor[] = $toks[1];
@@ -192,6 +205,9 @@ class Item {
     public function toFlatFileFormat( string $filename ) {
         file_put_contents( $filename, 'Item:' . $this->name . PHP_EOL, FILE_APPEND );
         file_put_contents( $filename, 'Desc:' . $this->description . PHP_EOL, FILE_APPEND );
+        foreach ( $this->alias as $alias ) {
+            file_put_contents( $filename, 'Alias:' . $alias . PHP_EOL, FILE_APPEND );
+        }
         foreach ( $this->isInstanceOf as $inst ) {
             file_put_contents( $filename, 'Type:' . $inst . PHP_EOL, FILE_APPEND );
         }
