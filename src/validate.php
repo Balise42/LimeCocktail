@@ -14,6 +14,23 @@ foreach ( $store->getStore() as $item ) {
             $numError++;
         }
     }
+
+    if ( in_array( 'cocktail recipe', $item->isInstanceOf ) || in_array( 'recipe', $item->isInstanceOf ) ) {
+        if ( count ( $item->source ) === 0 ) {
+            echo 'Missing source for ' . $item->name . PHP_EOL;
+            $numError++;
+        }
+        foreach ( $item->source as $source ) {
+            if ( !isset( $source->url ) && !isset( $source->book ) ) {
+                echo 'Invalid source for ' . $item->name . PHP_EOL;
+                $numError++;
+            }
+            if ( isset ( $source->book ) && !isset( $source->page) ) {
+                echo 'Invalid page for ' . $item->name . PHP_EOL;
+                $numError++;
+            }
+        }
+    }
 }
 
 if ( $numError === 0 ) {
