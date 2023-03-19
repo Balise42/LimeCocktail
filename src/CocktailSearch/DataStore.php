@@ -190,4 +190,8 @@ class DataStore {
         }
         return false;
     }
+
+    public function getStore() {
+        return $this->items;
+    }
 }
