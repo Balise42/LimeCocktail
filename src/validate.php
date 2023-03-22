@@ -31,6 +31,13 @@ foreach ( $store->getStore() as $item ) {
             }
         }
     }
+
+    if ( count( $item->isInstanceOf ) === 0 && count( $item->isSubclassOf ) === 0 ) {
+        if ( !in_array ( $item->name, ['recipe', 'ingredient', 'book', 'glassware'] ) ) {
+            echo 'Missing type for ' . $item->name . PHP_EOL;
+            $numError++;
+        }
+    }
 }
 
 if ( $numError === 0 ) {
