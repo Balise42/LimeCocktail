@@ -35,29 +35,30 @@ if( !isset( $_GET['ing'] ) ):?>
 
 <?php
 else:
-    ?>
-    <a href="index.php">&lt;-Back</a><br>
-    <table>
-        <tr>
-            <th>Cocktail</th>
-            <th>Description</th>
-            <th>Source</th>
-        </tr>
-<?php
     $search = [];
-    foreach ( $_GET['ing'] as $ing ) {
-        if ( $ds->hasItem( $ing ) ) {
+    foreach ($_GET['ing'] as $ing) {
+        if ($ds->hasItem($ing)) {
             $search[] = $ing;
         }
     }
+    ?>
+    <a href="index.php">&lt;-Back</a><br>
+    <p>Cocktails with <?php echo implode( ', ', $search ); ?></p>
+    <table style="width:800px">
+        <tr>
+            <th>Cocktail</th>
+            <th>Ingredients</th>
+            <th>Source</th>
+        </tr>
+<?php
     $list = $ds->getCocktails( $search );
     foreach( $list as $cocktail ):?>
         <tr>
             <td>
             <?php echo $cocktail->name ?>
             </td>
-            <td>
-                <?php echo $cocktail->description ?>
+            <td style="width: 60%">
+                <?php echo implode( ', ', array_map( fn($i) => $i->ingredient, $cocktail->hasIngredients ) ) ?>
             </td>
             <td>
                 <?php
