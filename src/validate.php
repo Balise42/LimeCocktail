@@ -7,6 +7,8 @@ use CocktailSearch\DataStore;
 $store = DataStore::fromFlatFile( '../data/cocktails.txt' );
 
 $numError = 0;
+$numCocktails = 0;
+$numIng = 0;
 foreach ( $store->getStore() as $item ) {
     foreach ( $item->hasIngredients as $ing ) {
         if ( !$store->isIngredient( $store->getStore()[$ing->ingredient], 0 ) ) {
@@ -38,8 +40,16 @@ foreach ( $store->getStore() as $item ) {
             $numError++;
         }
     }
+
+    if ( in_array('cocktail recipe', $item->isInstanceOf ) ) {
+        $numCocktails++;
+    }
+    if ( $store->isIngredient( $item, 0 ) ) {
+        $numIng++;
+    }
 }
 
 if ( $numError === 0 ) {
-    echo "Everything's looking good!";
+    echo "Everything's looking good!" . PHP_EOL;
+    echo "$numCocktails cocktails, $numIng ingredients" . PHP_EOL;
 }
