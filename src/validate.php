@@ -10,6 +10,10 @@ $numError = 0;
 $numCocktails = 0;
 $numIng = 0;
 foreach ( $store->getStore() as $item ) {
+    if ( $item->description === '' ) {
+        echo 'Missing description for ' . $item->name . PHP_EOL;
+        $numError++;
+    }
     foreach ( $item->hasIngredients as $ing ) {
         if ( !$store->isIngredient( $store->getStore()[$ing->ingredient], 0 ) ) {
             echo 'Missing ingredient definition for ' . $ing->ingredient . PHP_EOL;

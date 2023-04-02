@@ -34,7 +34,7 @@ Every line is prefixed with a keyword, indicated below. Empty lines are ignored.
 
 ### File format example
 
-A small extract of my own recipe index, illustrating all the syntax, is provided in `data/cocktails-sample.txt`.
+A small extract of my own recipe index, illustrating all the syntax, is provided in `samples/cocktails-sample.txt`.
 
 ## Using LimeCocktail
 
