@@ -62,4 +62,12 @@ class IngRel {
         }
         return $ingRel;
     }
+
+    public function getIngredientDesc() {
+        if ( count ( $this->suchAs ) === 0) {
+            return $this->ingredient;
+        } else {
+            return $this->ingredient . " (" . implode(', ', $this->suchAs ) . ")";
+        }
+    }
 }

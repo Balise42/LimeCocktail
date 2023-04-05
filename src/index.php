@@ -58,7 +58,7 @@ else:
             <?php echo $cocktail->name ?>
             </td>
             <td style="width: 60%">
-                <?php echo implode( ', ', array_map( fn($i) => $i->ingredient, $cocktail->hasIngredients ) ) ?>
+                <?php echo implode( ', ', array_map( fn($i) => $i->getIngredientDesc(), $cocktail->hasIngredients ) ) ?>
             </td>
             <td>
                 <?php
