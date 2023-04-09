@@ -15,7 +15,7 @@ foreach ( $store->getStore() as $item ) {
         $numError++;
     }
     foreach ( $item->hasIngredients as $ing ) {
-        if ( !$store->isIngredient( $store->getStore()[$ing->ingredient], 0 ) ) {
+        if ( !$store->isIngredient( $store->getStore()[ strtoupper( $ing->ingredient ) ], 0 ) ) {
             echo 'Missing ingredient definition for ' . $ing->ingredient . PHP_EOL;
             $numError++;
         }

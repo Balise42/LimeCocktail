@@ -37,11 +37,11 @@ class DataStore {
 
         foreach ( $txtFile as $line ) {
             if ( str_starts_with( $line, 'Item:') ) {
-                $item = substr( $line, 5 );
+                $item = strtoupper( substr( $line, 5 ) );
                 if ( in_array( $item, $existingItems ) ) {
                     throw new RuntimeException( "Item $item declared twice" );
                 }
-                $existingItems[] = substr( $line, 5 );
+                $existingItems[] = $item;
             }
         }
 
@@ -54,7 +54,7 @@ class DataStore {
             }
 
             $item = Item::fromFlatFileFormat( $txtFile, $i, $existingItems );
-            $store->items[$item->name] = $item;
+            $store->items[ strtoupper( $item->name ) ] = $item;
         }
 
         return $store;
@@ -73,12 +73,12 @@ class DataStore {
         if ( $exact === 'exact' ) {
             return $ings;
         }
-        $ings = array_merge( $ings, $this->items[$ingredient]->substituteFor );
+        $ings = array_merge( $ings, $this->items[strtoupper( $ingredient) ]->substituteFor );
         $ings = array_merge( $ings, $this->getSubsUp( $ingredient) );
         $ings = array_merge( $ings, $this->getSubsDown( $ingredient) );
 
         if ( $recipe !== null ) {
-            foreach ( $this->items[$recipe]->hasIngredients as $ing ) {
+            foreach ( $this->items[strtoupper( $recipe) ]->hasIngredients as $ing ) {
                 if ( $ing->ingredient === $ingredient ) {
                     $ings = array_merge( $ings, $ing->substituteFor, $ing->suchAs );
                 }
@@ -100,10 +100,10 @@ class DataStore {
 
     private function getSubsUp(string $ingredient) {
         $ings = [ $ingredient ];
-        foreach ( $this->items[$ingredient]->isInstanceOf as $up ) {
+        foreach ( $this->items[strtoupper( $ingredient ) ]->isInstanceOf as $up ) {
             $ings = array_merge( $ings, $this->getSubsUp( $up ) );
         }
-        foreach ( $this->items[$ingredient]->isSubclassOf as $up ) {
+        foreach ( $this->items[strtoupper( $ingredient )]->isSubclassOf as $up ) {
             $ings = array_merge( $ings, $this->getSubsUp( $up ) );
         }
 
@@ -121,7 +121,7 @@ class DataStore {
         $recipes = [];
         $extendedIngredients = array_map( fn($i, $x): array => $this->getSubstitutes( $i, $x ), $ingredients, $exact );
         foreach ($this->items as $recipe) {
-            if ( !in_array('cocktail recipe', $recipe->isInstanceOf ) ) {
+            if ( !in_array('COCKTAIL RECIPE', array_map( 'strtoupper', $recipe->isInstanceOf ) ) ) {
                 continue;
             }
             $include = true;
@@ -139,12 +139,13 @@ class DataStore {
     }
 
     private function hasExtendedIngredient( Item $recipe, array $ingredients ): bool {
+        $ingUpper = array_map( 'strtoupper', $ingredients );
         foreach ( $recipe->hasIngredients as $recipeIng ) {
-            if ( in_array( $recipeIng->ingredient, $ingredients ) ) {
+            if ( in_array( strtoupper( $recipeIng->ingredient ), $ingUpper ) ) {
                 return true;
             }
             foreach ( $recipeIng->suchAs as $such ) {
-                if ( in_array( $such, $ingredients) ) {
+                if ( in_array( strtoupper( $such ), $ingUpper) ) {
                     return true;
                 }
             }
@@ -153,13 +154,13 @@ class DataStore {
     }
 
     public static function assertExistence( string $elem, array $existingItems, int $i ) {
-        if ( !in_array( $elem, $existingItems ) ) {
+        if ( !in_array( strtoupper( $elem ), $existingItems ) ) {
             throw new UnexpectedValueException( "$i: Item $elem is not part of the known elements" );
         }
     }
 
     public function hasItem(string $ing): bool {
-        return ( array_key_exists( $ing, $this->items ) );
+        return ( array_key_exists( strtoupper( $ing ), $this->items ) );
     }
 
     public function getIngredients(): array {
@@ -183,12 +184,12 @@ class DataStore {
             return true;
         }
         foreach ( $item->isInstanceOf as $inst ) {
-            if ( $this->isIngredient( $this->items[$inst], $it + 1 ) ) {
+            if ( $this->isIngredient( $this->items[strtoupper( $inst )], $it + 1 ) ) {
                 return true;
             }
         }
         foreach ( $item->isSubclassOf as $class ) {
-            if ( $this->isIngredient( $this->items[$class], $it + 1 ) ) {
+            if ( $this->isIngredient( $this->items[strtoupper( $class ) ], $it + 1 ) ) {
                 return true;
             }
         }
