@@ -19,11 +19,11 @@ $ds = DataStore::fromFlatFile( '../data/cocktails.txt' );
 
 if( !isset( $_GET['ing'] ) ):?>
     <form method="get">
-        <p><input name="ing[]" list="inglist" /></p>
-        <p><input name="ing[]" list="inglist" /></p>
-        <p><input name="ing[]" list="inglist" /></p>
-        <p><input name="ing[]" list="inglist" /></p>
-        <p><input name="ing[]" list="inglist" /></p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
         <datalist id="inglist">
             <?php foreach ( $ds->getIngredients() as $alias => $ing ):
             echo "<option value=\"$ing\">$alias</option>";
@@ -36,13 +36,15 @@ if( !isset( $_GET['ing'] ) ):?>
 <?php
 else:
     $search = [];
-    foreach ($_GET['ing'] as $ing) {
+    $exact = [];
+    foreach ($_GET['ing'] as $i => $ing) {
         if ($ds->hasItem($ing)) {
             $search[] = $ing;
+            $exact[] = $_GET['exact'][$i];
         }
     }
     ?>
-    <a href="index.php">&lt;-Back</a><br>
+    <a href="./index.php">&lt;-Back</a><br>
     <p>Cocktails with <?php echo implode( ', ', $search ); ?></p>
     <table style="width:800px">
         <tr>
@@ -51,7 +53,7 @@ else:
             <th>Source</th>
         </tr>
 <?php
-    $list = $ds->getCocktails( $search );
+    $list = $ds->getCocktails( $search, $exact );
     foreach( $list as $cocktail ):?>
         <tr>
             <td>

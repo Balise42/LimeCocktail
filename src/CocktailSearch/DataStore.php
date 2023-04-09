@@ -68,8 +68,11 @@ class DataStore {
         }
     }
 
-    function getSubstitutes( string $ingredient, ?string $recipe = null ): array {
+    function getSubstitutes( string $ingredient, string $exact, ?string $recipe = null ): array {
         $ings = [ $ingredient ];
+        if ( $exact === 'exact' ) {
+            return $ings;
+        }
         $ings = array_merge( $ings, $this->items[$ingredient]->substituteFor );
         $ings = array_merge( $ings, $this->getSubsUp( $ingredient) );
         $ings = array_merge( $ings, $this->getSubsDown( $ingredient) );
@@ -111,12 +114,12 @@ class DataStore {
      * @param array $ingredients
      * @return Item[]
      */
-    public function getCocktails( array $ingredients ): array {
+    public function getCocktails( array $ingredients, array $exact ): array {
         if ( count( $ingredients ) === 0 ) {
             return [];
         }
         $recipes = [];
-        $extendedIngredients = array_map( fn($i): array => $this->getSubstitutes( $i ), $ingredients );
+        $extendedIngredients = array_map( fn($i, $x): array => $this->getSubstitutes( $i, $x ), $ingredients, $exact );
         foreach ($this->items as $recipe) {
             if ( !in_array('cocktail recipe', $recipe->isInstanceOf ) ) {
                 continue;
@@ -139,6 +142,11 @@ class DataStore {
         foreach ( $recipe->hasIngredients as $recipeIng ) {
             if ( in_array( $recipeIng->ingredient, $ingredients ) ) {
                 return true;
+            }
+            foreach ( $recipeIng->suchAs as $such ) {
+                if ( in_array( $such, $ingredients) ) {
+                    return true;
+                }
             }
         }
         return false;
