@@ -36,8 +36,8 @@ class DataStore {
         $store = new DataStore();
 
         foreach ( $txtFile as $line ) {
-            if ( str_starts_with( $line, 'Item:') ) {
-                $item = strtoupper( substr( $line, 5 ) );
+            if ( str_starts_with( $line, 'Item:') || str_starts_with( $line, 'Alias:') ) {
+                $item = strtoupper( explode( ':', $line, 2 )[1] );
                 if ( in_array( $item, $existingItems ) ) {
                     throw new RuntimeException( "Item $item declared twice" );
                 }
@@ -55,6 +55,9 @@ class DataStore {
 
             $item = Item::fromFlatFileFormat( $txtFile, $i, $existingItems );
             $store->items[ strtoupper( $item->name ) ] = $item;
+            foreach ( $item->alias as $alias ) {
+                $store->items[ strtoupper( $alias ) ] = $item;
+            }
         }
 
         return $store;
@@ -69,13 +72,13 @@ class DataStore {
     }
 
     function getSubstitutes( string $ingredient, string $exact, ?string $recipe = null ): array {
-        $ings = [ $ingredient ];
+        $ings = [ $ingredient, ...$this->items[strtoupper( $ingredient) ]->alias ];
+        $ings = array_merge( $ings, $this->getSubsDown( $ingredient) );
         if ( $exact === 'exact' ) {
             return $ings;
         }
         $ings = array_merge( $ings, $this->items[strtoupper( $ingredient) ]->substituteFor );
         $ings = array_merge( $ings, $this->getSubsUp( $ingredient) );
-        $ings = array_merge( $ings, $this->getSubsDown( $ingredient) );
 
         if ( $recipe !== null ) {
             foreach ( $this->items[strtoupper( $recipe) ]->hasIngredients as $ing ) {
@@ -149,6 +152,11 @@ class DataStore {
                     return true;
                 }
             }
+            foreach ( $recipeIng->substituteFor as $sub ) {
+                if ( in_array( strtoupper( $sub ), $ingUpper) ) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -180,7 +188,7 @@ class DataStore {
         if ( $it > 50 ) {
             throw new RuntimeException( "ETOOMANYLOOPS" );
         }
-        if ( in_array( 'ingredient', $item->isInstanceOf ) || in_array( 'ingredient', $item->isSubclassOf)) {
+        if ( in_array( 'INGREDIENT', array_map( 'strtoupper', $item->isInstanceOf ) ) || in_array( 'INGREDIENT', array_map( 'strtoupper', $item->isSubclassOf ) ) ) {
             return true;
         }
         foreach ( $item->isInstanceOf as $inst ) {
