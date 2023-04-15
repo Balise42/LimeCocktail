@@ -19,14 +19,13 @@ $ds = DataStore::fromFlatFile( './data/cocktails.txt' );
 
 if( !isset( $_GET['ing'] ) ):?>
     <form method="get">
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
+        <?php for ( $i = 0; $i < 5; $i++ ) { ?>
+            <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
+        <?php } ?>
+
         <datalist id="inglist">
-            <?php foreach ( $ds->getIngredients() as $alias => $ing ):
-            echo "<option value=\"$ing\">$alias</option>";
+            <?php foreach ( $ds->getIngredients() as $ing => $desc ):
+            echo "<option value=\"$ing\">$desc</option>";
             endforeach;
             ?>
         </datalist>

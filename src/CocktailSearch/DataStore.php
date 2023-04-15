@@ -177,12 +177,13 @@ class DataStore {
         $res = [];
         foreach ( $this->items as $item ) {
             if ( $this->isIngredient( $item, 0 ) ) {
-                $res[$item->name] = $item->name;
+                $res[$item->name] = $item->description;
                 foreach ( $item->alias as $alias) {
-                    $res[$alias] = $item->name;
+                    $res[$alias] = $item->description;
                 }
             }
         }
+        ksort( $res );
         return $res;
     }
 
