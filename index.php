@@ -10,11 +10,11 @@
 
 <?php
 
-require "../vendor/autoload.php";
+require "./vendor/autoload.php";
 
 use CocktailSearch\DataStore;
 
-$ds = DataStore::fromFlatFile( '../data/cocktails.txt' );
+$ds = DataStore::fromFlatFile( './data/cocktails.txt' );
 
 
 if( !isset( $_GET['ing'] ) ):?>
@@ -44,7 +44,7 @@ else:
         }
     }
     ?>
-    <a href="./index.php">&lt;-Back</a><br>
+    <a href="index.php">&lt;-Back</a><br>
     <p>Cocktails with <?php echo implode( ', ', $search ); ?></p>
     <table style="width:800px">
         <tr>
