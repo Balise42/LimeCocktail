@@ -19,11 +19,11 @@ $ds = DataStore::fromFlatFile( '../data/cocktails.txt' );
 
 if( !isset( $_GET['ing'] ) ):?>
     <form method="get">
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
-        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
+        <p><input name="ing[]" list="inglist" /> <select name="exact[]"><option value="fuzzy">Fuzzy</option><option value="exact">Exact</option><option value="exclude">Exclude</option></select> </p>
         <datalist id="inglist">
             <?php foreach ( $ds->getIngredients() as $alias => $ing ):
             echo "<option value=\"$ing\">$alias</option>";

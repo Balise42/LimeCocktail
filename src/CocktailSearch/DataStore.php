@@ -115,6 +115,7 @@ class DataStore {
 
     /**
      * @param array $ingredients
+     * @param array $exact
      * @return Item[]
      */
     public function getCocktails( array $ingredients, array $exact ): array {
@@ -128,8 +129,9 @@ class DataStore {
                 continue;
             }
             $include = true;
-            foreach ( $extendedIngredients as $extendedIngredient ) {
-                if (!$this->hasExtendedIngredient( $recipe, $extendedIngredient ) ) {
+            foreach ( $extendedIngredients as $i => $extendedIngredient ) {
+                if ( ( !$this->hasExtendedIngredient( $recipe, $extendedIngredient ) &&  $exact[$i] !== 'exclude' )
+                    || ( $this->hasExtendedIngredient( $recipe, $extendedIngredient ) && $exact[$i] === 'exclude' ) ) {
                     $include = false;
                     break;
                 }
