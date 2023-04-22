@@ -79,7 +79,7 @@ else:
             <th>Source</th>
         </tr>
 <?php
-    $list = $ds->getCocktails( $search, $exact );
+    $list = $ds->getRecipes( $search, $exact, 'cocktail recipe' );
     foreach( $list as $cocktail ):?>
         <tr>
             <td class="cocktailname">

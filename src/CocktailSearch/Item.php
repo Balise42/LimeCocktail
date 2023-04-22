@@ -4,6 +4,7 @@
 namespace CocktailSearch;
 
 
+use RuntimeException;
 use stdClass;
 use UnexpectedValueException;
 
@@ -232,5 +233,30 @@ class Item {
         foreach ( $this->source as $source ) {
             $source->toFlatFile( $filename );
         }
+    }
+
+    public function isIngredient( $ds ): bool {
+        return $this->hasType( 'INGREDIENT', $ds );
+    }
+
+    public function hasType( string $type, DataStore $ds, int $it = 0 ): bool {
+        $type = strtoupper( $type );
+        if ( $it > 50 ) {
+            throw new RuntimeException( "ETOOMANYLOOPS" );
+        }
+        if ( in_array( $type, array_map( 'strtoupper', $this->isInstanceOf ) ) || in_array( $type, array_map( 'strtoupper', $this->isSubclassOf ) ) ) {
+            return true;
+        }
+        foreach ( $this->isInstanceOf as $inst ) {
+            if ( $ds->get( $inst )->hasType( $type, $ds, $it + 1 ) ) {
+                return true;
+            }
+        }
+        foreach ( $this->isSubclassOf as $class ) {
+            if  ( $ds->get( $class )->hasType( $type, $ds, $it + 1 ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

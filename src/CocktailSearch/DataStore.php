@@ -116,15 +116,16 @@ class DataStore {
     /**
      * @param array $ingredients
      * @param array $exact
+     * @param string $type
      * @return Item[]
      */
-    public function getCocktails( array $ingredients, array $exact ): array {
-        if ( count( $ingredients ) === 0 ) {
-            return [];
-        }
+    public function getRecipes(array $ingredients, array $exact, string $type ): array {
         $recipes = [];
         $extendedIngredients = array_map( fn($i, $x): array => $this->getSubstitutes( $i, $x ), $ingredients, $exact );
         foreach ($this->items as $recipe) {
+            if ( !$recipe->hasType( $type, $this ) ) {
+                continue;
+            }
             if ( !in_array('COCKTAIL RECIPE', array_map( 'strtoupper', $recipe->isInstanceOf ) ) ) {
                 continue;
             }
@@ -176,7 +177,7 @@ class DataStore {
     public function getIngredients(): array {
         $res = [];
         foreach ( $this->items as $item ) {
-            if ( $this->isIngredient( $item, 0 ) ) {
+            if ( $item->isIngredient( $this ) ) {
                 $res[$item->name] = $item->description;
                 foreach ( $item->alias as $alias) {
                     $res[$alias] = $item->description;
@@ -187,27 +188,15 @@ class DataStore {
         return $res;
     }
 
-    public function isIngredient( Item $item, int $it ): bool {
-        if ( $it > 50 ) {
-            throw new RuntimeException( "ETOOMANYLOOPS" );
-        }
-        if ( in_array( 'INGREDIENT', array_map( 'strtoupper', $item->isInstanceOf ) ) || in_array( 'INGREDIENT', array_map( 'strtoupper', $item->isSubclassOf ) ) ) {
-            return true;
-        }
-        foreach ( $item->isInstanceOf as $inst ) {
-            if ( $this->isIngredient( $this->items[strtoupper( $inst )], $it + 1 ) ) {
-                return true;
-            }
-        }
-        foreach ( $item->isSubclassOf as $class ) {
-            if ( $this->isIngredient( $this->items[strtoupper( $class ) ], $it + 1 ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function getStore() {
         return $this->items;
+    }
+
+    public function get( string $s ): Item {
+        if ( $this->hasItem( $s ) ) {
+            return $this->items[ strtoupper($s) ];
+        } else {
+            throw new UnexpectedValueException( "$s is not part of the known items in the datastore" );
+        }
     }
 }
