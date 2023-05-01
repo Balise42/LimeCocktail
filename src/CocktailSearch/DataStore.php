@@ -30,10 +30,37 @@ class DataStore {
         return $store;
     }
 
-    public static function fromFlatFile( string $filename ): DataStore {
-        $txtFile = file( $filename, FILE_IGNORE_NEW_LINES );
+    public static function fromFiles( string $filename, ?string $dirname ): DataStore {
         $existingItems = [];
         $store = new DataStore();
+        $store->fromFlatFile( $filename, $existingItems );
+        $store->fromDir( $dirname, $existingItems );
+        return $store;
+    }
+
+    private function fromDir( string $dirname, array &$existingItems ): void {
+        $scannedDir = array_diff( scandir( $dirname ), array( '..', '.' ) );
+        foreach ( $scannedDir as $name ) {
+            $f = $dirname . '/' . $name;
+            if ( is_dir( $f ) ) {
+                $this->fromDir( $f, $existingItems );
+            } else {
+                $this->fromRecipeFile( $f, $existingItems );
+            }
+        }
+    }
+
+    private function fromRecipeFile( string $filename, array $existingItems ): void {
+        $txtFile = file( $filename, FILE_IGNORE_NEW_LINES );
+        $item = Item::fromRecipeFile( $txtFile, $existingItems, $filename );
+        $this->items[ strtoupper( $item->name) ] = $item;
+        foreach ( $item->alias as $alias ) {
+            $this->items[ strtoupper( $alias ) ] = $item;
+        }
+    }
+
+    private function fromFlatFile( string $filename, array &$existingItems ): void {
+        $txtFile = file( $filename, FILE_IGNORE_NEW_LINES );
 
         foreach ( $txtFile as $line ) {
             if ( str_starts_with( $line, 'Item:') || str_starts_with( $line, 'Alias:') ) {
@@ -54,13 +81,11 @@ class DataStore {
             }
 
             $item = Item::fromFlatFileFormat( $txtFile, $i, $existingItems );
-            $store->items[ strtoupper( $item->name ) ] = $item;
+            $this->items[ strtoupper( $item->name ) ] = $item;
             foreach ( $item->alias as $alias ) {
-                $store->items[ strtoupper( $alias ) ] = $item;
+                $this->items[ strtoupper( $alias ) ] = $item;
             }
         }
-
-        return $store;
     }
 
     public function toFlatFile( string $filename ) {
@@ -164,13 +189,13 @@ class DataStore {
         return false;
     }
 
-    public static function assertExistence( string $elem, array $existingItems, int $i ) {
+    public static function assertExistence( string $elem, array $existingItems, int $i, ?string $file = null ) {
         if ( !in_array( strtoupper( $elem ), $existingItems ) ) {
-            throw new UnexpectedValueException( "$i: Item $elem is not part of the known elements" );
+            throw new UnexpectedValueException( $file !== null ? "$file ": "" . "$i: Item $elem is not part of the known elements" );
         }
     }
 
-    public function hasItem(string $ing): bool {
+    public function hasItem( string $ing ): bool {
         return ( array_key_exists( strtoupper( $ing ), $this->items ) );
     }
 

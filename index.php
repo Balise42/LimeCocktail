@@ -39,7 +39,7 @@ require "./vendor/autoload.php";
 
 use CocktailSearch\DataStore;
 
-$ds = DataStore::fromFlatFile( './data/cocktails.txt' );
+$ds = DataStore::fromFiles( './data/cocktails.txt', './data/recipes' );
 
 
 if( !isset( $_GET['ing'] ) ):?>
@@ -99,8 +99,10 @@ else:
                     if ( isset ($source->book) ) {
                         echo $source->book . ' p' . $source->page;
                     }
-                    else {
+                    else if ( isset ( $source->url ) ) {
                         echo "<a href='{$source->url}'>{$source->url}</a>";
+                    } else {
+                        echo "<a href='{$source->filename}'>recipe</a>";
                     }
                 }
                 ?>

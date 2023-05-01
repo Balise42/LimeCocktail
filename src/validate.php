@@ -4,7 +4,7 @@ require "../vendor/autoload.php";
 
 use CocktailSearch\DataStore;
 
-$store = DataStore::fromFlatFile( '../data/cocktails.txt' );
+$store = DataStore::fromFiles( '../data/cocktails.txt', '../data/recipes' );
 
 $numError = 0;
 $numCocktails = 0;
@@ -27,7 +27,7 @@ foreach ( $store->getStore() as $item ) {
             $numError++;
         }
         foreach ( $item->source as $source ) {
-            if ( !isset( $source->url ) && !isset( $source->book ) ) {
+            if ( !isset( $source->url ) && !isset( $source->book ) && !isset( $source->filename ) ) {
                 echo 'Invalid source for ' . $item->name . PHP_EOL;
                 $numError++;
             }

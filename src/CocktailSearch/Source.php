@@ -12,6 +12,7 @@ class Source
     public string $book;
     public string $page;
     public string $url;
+    public string $filename;
 
     public function toFlatFile( string $filename ) {
         if ( isset($this->book) ) {

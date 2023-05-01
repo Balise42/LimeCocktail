@@ -29,6 +29,8 @@ class Item {
     public array $glass = [];
     /** @var string[] */
     public array $garnish = [];
+    /** @var ?Recipe */
+    public ?Recipe $recipe = null;
 
     public static function fromJson( stdClass $jsonItem, array $jsonItems ): Item {
         // TODO would be nicer to not have to pass $jsonItems here
@@ -126,6 +128,61 @@ class Item {
             }
         }
 
+        return $item;
+    }
+
+    public static function fromRecipeFile( array $txtFile, array &$existingItems, string $filename ): Item {
+        $title = trim( $txtFile[0] );
+        if ( in_array( strtoupper( $title ), $existingItems ) ) {
+            throw new RuntimeException( "$filename: Item $title declared twice" );
+        }
+        $existingItems[] = strtoupper( $title );
+
+        $item = new Item();
+        $item->name = $title;
+        $item->recipe = new Recipe();
+        $source = new Source();
+        $source->filename = $filename;
+        $item->source[] = $source;
+
+        $i = 1;
+        while ( $i < count( $txtFile ) ) {
+            $line = $txtFile[$i];
+            $toks = array_map('trim', explode(':', $line, 2));
+            switch ( $toks[0] ) {
+                case 'Yield':
+                    $item->recipe->parseYield( $toks[1] );
+                    $i++;
+                    break;
+                case 'Type':
+                    DataStore::assertExistence( $toks[1], $existingItems, $i, $filename );
+                    $item->isInstanceOf[] = $toks[1];
+                    $i++;
+                    break;
+                case 'Desc':
+                    $item->description = $toks[1];
+                    $i++;
+                    break;
+                case 'Ingredients':
+                    $i++;
+                    $item->recipe->parseIngredients( $txtFile, $existingItems, $i, $filename );
+                    foreach ( array_keys( $item->recipe->ingQty ) as $ing ) {
+                        $ingRel = new IngRel();
+                        $ingRel->ingredient = $ing;
+                        $item->hasIngredients[] = $ingRel;
+                    }
+                    break;
+                case 'Recipe':
+                    $item->recipe->steps = array_slice( $txtFile, $i+1 );
+                    $i = count( $txtFile );
+                    break;
+                case '':
+                    $i++;
+                    break;
+                default:
+                    throw new UnexpectedValueException( "$i: Unknown token {$toks[0]}");
+            }
+        }
         return $item;
     }
 
