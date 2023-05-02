@@ -10,7 +10,7 @@ require "../vendor/autoload.php";
 
 use CocktailSearch\DataStore;
 
-$store = DataStore::fromFlatFile( '../data/cocktails.txt' );
+$store = DataStore::fromFiles( '../data/cocktails.txt', '../data/recipes' );
 
 $hierarchy = [];
 
