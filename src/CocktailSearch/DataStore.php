@@ -97,18 +97,21 @@ class DataStore {
     }
 
     function getSubstitutes( string $ingredient, string $exact, ?string $recipe = null ): array {
-        $ings = [ $ingredient, ...$this->items[strtoupper( $ingredient) ]->alias ];
-        $ings = array_merge( $ings, $this->getSubsDown( $ingredient) );
+        $ingName = $this->itemName( $ingredient );
+        $ings = [ $ingName ];
+        $ings = array_merge( $ings, $this->getSubsDown( $ingredient ) );
         if ( $exact === 'exact' ) {
             return $ings;
         }
-        $ings = array_merge( $ings, $this->items[strtoupper( $ingredient) ]->substituteFor );
+
+        $ings = array_merge( $ings, $this->getDirectSubs( $ingredient ) );
+        $ings = array_merge( $ings, $this->itemNames( $this->items[strtoupper( $ingredient) ]->substituteFor ) );
         $ings = array_merge( $ings, $this->getSubsUp( $ingredient) );
 
         if ( $recipe !== null ) {
             foreach ( $this->items[strtoupper( $recipe) ]->hasIngredients as $ing ) {
                 if ( $ing->ingredient === $ingredient ) {
-                    $ings = array_merge( $ings, $ing->substituteFor, $ing->suchAs );
+                    $ings = array_merge( $ings, $this->itemNames( $ing->substituteFor ), $this->itemNames( $ing->suchAs ) );
                 }
             }
         }
@@ -116,23 +119,44 @@ class DataStore {
         return array_unique( $ings );
     }
 
-    private function getSubsDown(string $ingredient) {
-        $ings = [ $ingredient ];
+    private function itemNames( array $ings ): array {
+        return array_map( [$this, "itemName"], $ings );
+    }
+
+    private function itemName( string $ingredient ): string {
+        return $this->items[strtoupper( $ingredient ) ]->name;
+    }
+
+    private function getDirectSubs( string $ingredient ) {
+        $ingName = $this->itemName( $ingredient );
+        $ings = [ $ingName ];
         foreach ( $this->items as $item ) {
-            if ( in_array( $ingredient, $item->isSubclassOf ) || in_array( $ingredient, $item->isInstanceOf ) ) {
-                $ings = array_merge( $ings, $this->getSubsDown( $item->name ) );
+            if ( in_array( $ingName, $this->itemNames( $item->substituteFor ) ) ) {
+                $ings[] = $item->name;
+            }
+        }
+        return $ings;
+    }
+
+    private function getSubsDown(string $ingredient) {
+        $ingName = $this->itemName( $ingredient );
+        $ings = [ $ingName ];
+        foreach ( $this->items as $down ) {
+            if ( in_array( $ingName, $this->itemNames( $down->isSubclassOf ) ) || in_array( $ingName, $this->itemNames( $down->isInstanceOf ) ) ) {
+                $ings = array_merge( $ings, $this->getSubsDown( $down->name ) );
             }
         }
         return $ings;
     }
 
     private function getSubsUp(string $ingredient) {
-        $ings = [ $ingredient ];
-        foreach ( $this->items[strtoupper( $ingredient ) ]->isInstanceOf as $up ) {
-            $ings = array_merge( $ings, $this->getSubsUp( $up ) );
+        $ingName = $this->itemName( $ingredient );
+        $ings = [ $ingName ];
+        foreach ( $this->items[strtoupper( $ingName ) ]->isInstanceOf as $up ) {
+            $ings = array_merge( $ings, $this->getSubsUp( $this->itemName( $up ) ) );
         }
-        foreach ( $this->items[strtoupper( $ingredient )]->isSubclassOf as $up ) {
-            $ings = array_merge( $ings, $this->getSubsUp( $up ) );
+        foreach ( $this->items[strtoupper( $ingName )]->isSubclassOf as $up ) {
+            $ings = array_merge( $ings, $this->getSubsUp( $this->itemName( $up ) ) );
         }
 
         return $ings;
@@ -170,18 +194,18 @@ class DataStore {
     }
 
     private function hasExtendedIngredient( Item $recipe, array $ingredients ): bool {
-        $ingUpper = array_map( 'strtoupper', $ingredients );
+        $ingUpper = array_map( 'strtoupper', $this->itemNames( $ingredients ) );
         foreach ( $recipe->hasIngredients as $recipeIng ) {
-            if ( in_array( strtoupper( $recipeIng->ingredient ), $ingUpper ) ) {
+            if ( in_array( strtoupper( $this->itemName( $recipeIng->ingredient ) ), $ingUpper ) ) {
                 return true;
             }
             foreach ( $recipeIng->suchAs as $such ) {
-                if ( in_array( strtoupper( $such ), $ingUpper) ) {
+                if ( in_array( strtoupper( $this->itemName( $such ) ), $ingUpper) ) {
                     return true;
                 }
             }
             foreach ( $recipeIng->substituteFor as $sub ) {
-                if ( in_array( strtoupper( $sub ), $ingUpper) ) {
+                if ( in_array( strtoupper( $this->itemName( $sub ) ), $ingUpper) ) {
                     return true;
                 }
             }
