@@ -123,7 +123,7 @@ class DataStore {
         return array_map( [$this, "itemName"], $ings );
     }
 
-    private function itemName( string $ingredient ): string {
+    public function itemName( string $ingredient ): string {
         return $this->items[strtoupper( $ingredient ) ]->name;
     }
 

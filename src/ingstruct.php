@@ -16,6 +16,7 @@ $hierarchy = [];
 
 foreach ( $store->getStore() as $item ) {
     foreach ( array_merge( $item->isInstanceOf, $item->isSubclassOf ) as $super ) {
+        $super = $store->itemName( $super );
         if ( !array_key_exists( $super, $hierarchy) ) {
             $hierarchy[$super] = [];
         }
