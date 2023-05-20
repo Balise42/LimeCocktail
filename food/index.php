@@ -2,17 +2,17 @@
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
 <?php
 
-require "./vendor/autoload.php";
+require "../vendor/autoload.php";
 
 use CocktailSearch\DataStore;
 
-$ds = DataStore::fromFiles( './data/cocktails.txt', './data/recipes' );
+$ds = DataStore::fromFiles( '../recipes/recipes.txt', '../recipes/txt' );
 
 
 if( !isset( $_GET['ing'] ) ):?>
@@ -43,28 +43,28 @@ else:
         }
     }
     ?>
-    <a href="index.php">&lt;-Back</a><br>
-    <p>Cocktails with <?php echo implode( ', ', $search ); ?></p>
+    <a href="/food/index.php">&lt;-Back</a><br>
+    <p>Recipes with <?php echo implode( ', ', $search ); ?></p>
     <table class="recipetable">
         <tr>
-            <th>Cocktail</th>
+            <th>Recipe</th>
             <th>Ingredients</th>
             <th>Source</th>
         </tr>
 <?php
-    $list = $ds->getRecipes( $search, $exact, 'cocktail recipe' );
-    foreach( $list as $cocktail ):?>
+    $list = $ds->getRecipes( $search, $exact, 'recipe' );
+    foreach($list as $recipe ):?>
         <tr>
             <td class="recipename">
-            <?php echo $cocktail->name ?>
+            <?php echo $recipe->name ?>
             </td>
             <td class="inglist">
-                <?php echo implode( ', ', array_map( fn($i) => $i->getIngredientDesc(), $cocktail->hasIngredients ) ) ?>
+                <?php echo implode( ', ', array_map( fn($i) => $i->getIngredientDesc(), $recipe->hasIngredients ) ) ?>
             </td>
             <td class="source">
                 <?php
                 $first = true;
-                foreach ( $cocktail->source as $source ) {
+                foreach ($recipe->source as $source ) {
                     if ( !$first ) {
                         echo "<br>";
                     }
@@ -73,7 +73,7 @@ else:
                         echo $source->book . ' p' . $source->page;
                     }
                     else if ( isset ( $source->url ) ) {
-                        echo "<a href='{$source->url}'>{$source->url}</a>";
+                        echo "<a href='{$source->url}'>Original source</a>";
                     } else {
                         echo "<a href='{$source->filename}'>recipe</a>";
                     }

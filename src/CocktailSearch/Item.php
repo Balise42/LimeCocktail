@@ -159,6 +159,12 @@ class Item {
                     $item->isInstanceOf[] = $toks[1];
                     $i++;
                     break;
+                case 'Source':
+                    $source = new Source();
+                    $source->url = $toks[1];
+                    $item->source[] = $source;
+                    $i++;
+                    break;
                 case 'Desc':
                     $item->description = $toks[1];
                     $i++;

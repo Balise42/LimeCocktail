@@ -21,7 +21,7 @@ class Recipe {
                 continue;
             }
             $toks = explode( ', ', $line );
-            $ing = implode( ", ", array_splice( $toks, 0, count( $toks ) - 1 ) );
+            $ing = $toks[0];
             $qty = $toks[ count($toks) - 1];
             DataStore::assertExistence( $ing, $existingItems, $i, $filename );
             $this->ingQty[$ing] = $qty;

@@ -1,0 +1,140 @@
+Item:ingredient
+Desc:class for ingredients
+
+Item:recipe
+Desc:class for recipes
+
+Item:zucchini
+Type:vegetable
+
+Item:vegetable
+Class:ingredient
+
+Item:red onion
+Type:onion
+
+Item:onion
+Type:vegetable
+
+Item:Asian green chili
+Type:chili
+
+Item:chili
+Class:spices and herbs
+
+Item:spices and herbs
+Class:ingredient
+
+Item:salt
+Alias:sel
+Type:spices and herbs
+
+Item:garlic powder
+Type:spices and herbs
+
+Item:onion powder
+Type:spices and herbs
+
+Item:black pepper
+Alias:pepper
+Type:spices and herbs
+
+Item:cayenne pepper
+Type:chili
+
+Item:egg
+Type:eggs and dairy
+
+Item:eggs and dairy
+Class:ingredient
+
+Item:almond meal
+Class:flour
+
+Item:flour
+Class:ingredient
+
+Item:flax meal
+Class:flour
+
+Item:mozzarella
+Type:cheese
+
+Item:cheese
+Type:eggs and dairy
+
+Item:cilantro
+Type:spices and herbs
+
+Item:eggplant
+Alias:aubergine
+Class:vegetable
+
+Item:tomato coulis
+Class:tomato sauce
+Alias:coulis de tomate
+
+Item:tomato sauce
+Class:sauce
+Alias:sauce tomate
+
+Item:herbes de provence
+Type:spices and herbs
+
+Item:grated cheese
+Class:cheese
+Alias:fromage râpé
+
+Item:olive oil
+Class:oil
+Alias:huile d'olive
+
+Item:oil
+Class:fat
+Alias:huile
+
+Item:fat
+Class:ingredient
+
+Item:sauce
+Class:ingredient
+
+Item:chicken
+Class:meat
+
+Item:meat
+Class:ingredient
+
+Item:avocado
+Class:vegetable
+
+Item:lime juice
+Class:spices and herbs
+
+Item:green onion
+Class:onion
+
+Item:mayonnaise
+Class:fat
+
+Item:tabasco
+Type:hot sauce
+
+Item:hot sauce
+Class:sauce
+
+Item:broccoli
+Type:vegetable
+
+Item:chicken broth
+Type:broth
+
+Item:broth
+Class:ingredient
+
+Item:heavy cream
+Type:eggs and dairy
+Type:fat
+
+Item:cheddar
+Type:cheese
