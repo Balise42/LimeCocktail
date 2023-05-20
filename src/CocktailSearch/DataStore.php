@@ -175,7 +175,7 @@ class DataStore {
             if ( !$recipe->hasType( $type, $this ) ) {
                 continue;
             }
-            if ( !in_array('RECIPE', array_map( 'strtoupper', $recipe->isInstanceOf ) ) ) {
+            if ( !in_array(strtoupper( $type ), array_map( 'strtoupper', $recipe->isInstanceOf ) ) ) {
                 continue;
             }
             $include = true;
