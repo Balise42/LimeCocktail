@@ -36,7 +36,7 @@ Item:onion powder
 Type:spices and herbs
 
 Item:black pepper
-Alias:pepper
+Alias:pepperu:
 Type:spices and herbs
 
 Item:cayenne pepper
